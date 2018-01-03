@@ -1,4 +1,4 @@
-import {Component, Input} from "@angular/core";
+import {Component, Input, Output, EventEmitter} from "@angular/core";
 import {Passenger} from "../../models/passenger.interface";
 import {Baggage} from "../../models/baggage.interface";
 
@@ -6,15 +6,32 @@ import {Baggage} from "../../models/baggage.interface";
   selector: 'passenger-form',
   styleUrls: ['passenger-form.component.scss'],
   template: `
-    <form #form="ngForm" novalidate>
-      {{detail | json }}
+    <form (submit)="handleSubmit(form.value, form.valid)" #form="ngForm" novalidate>
       <div>
         Passenger name:
-        <input type="text" name="fullname" [ngModel]="detail?.fullname">
+        <input
+          type="text"
+          name="fullname"
+          required
+          #fullname="ngModel"
+          [ngModel]="detail?.fullname">
+        {{fullname.errors | json }}
       </div>
+      <div *ngIf="fullname.errors?.required && fullname.dirty" class="error">
+        Passenger name is required
+      </div>
+      <!--ngModel refers to the local model, means the model of the input component-->
       <div>
         Passenger id:
-        <input type="number" name="id" [ngModel]="detail?.id">
+        <input
+          type="number"
+          name="id"
+          required
+          #id="ngModel"
+          [ngModel]="detail?.id">
+        <div *ngIf="id.errors?.required && id.dirty" class="error">
+          Passenger Id is required
+        </div>
       </div>
       <div>
         <input
@@ -39,18 +56,18 @@ import {Baggage} from "../../models/baggage.interface";
         </select>
       </div>
 
-      <div>
-        Luggage:
-        <select
-          name="baggage"
-          [ngModel]="detail?.baggage">
-          <option
-            *ngFor="let item of baggage"
-            [ngValue]="item.key">
-            {{item.value}}
-          </option>
-        </select>
-      </div>
+      <!--<div>-->
+      <!--Luggage:-->
+      <!--<select-->
+      <!--name="baggage"-->
+      <!--[ngModel]="detail?.baggage">-->
+      <!--<option-->
+      <!--*ngFor="let item of baggage"-->
+      <!--[ngValue]="item.key">-->
+      <!--{{item.value}}-->
+      <!--</option>-->
+      <!--</select>-->
+      <!--</div>-->
 
       <div *ngIf="form.value.checkedIn">
         Check in Date:
@@ -60,8 +77,10 @@ import {Baggage} from "../../models/baggage.interface";
           [ngModel]="detail?.checkInDate"
         >
       </div>
-
-      {{form.value | json }}
+      <button
+        type="submit" [disabled]="form.invalid">
+        Update Passenger
+      </button>
     </form>
   `
 })
@@ -69,6 +88,11 @@ import {Baggage} from "../../models/baggage.interface";
 export class PassengerFormComponent {
   @Input()
   detail: Passenger;
+
+  @Output()
+    update: EventEmitter<Passenger> = new EventEmitter<Passenger>();
+
+
   baggage: Baggage[] = [{
     key: 'none',
     value: 'no baggage'
@@ -87,6 +111,11 @@ export class PassengerFormComponent {
     if (checkedIn) {
       this.detail.checkInDate = Date.now();
     }
+  }
 
+  handleSubmit(passenger: Passenger, isValid: boolean) {
+    if(isValid) {
+      this.update.emit(passenger);
+    }
   }
 }
