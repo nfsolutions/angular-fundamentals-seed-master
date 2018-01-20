@@ -8,11 +8,10 @@
       "checkInDate": 1490742000000
     },
     {
+      "fullname": "Rosemarie",
       "id": 2,
-      "fullname": "Rose",
       "checkedIn": false,
-      "checkInDate": null,
-      "baggage": ""
+      "baggage": "hand-only"
     },
     {
       "id": 4,

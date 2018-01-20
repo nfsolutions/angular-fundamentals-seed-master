@@ -10,7 +10,7 @@ import {NotFoundComponent} from "./not-found.component";
 
 
 const routes: Routes = [
-    {path: '', component: HomeComponent, pathMatch: 'full'},
+    {path: '', redirectTo: 'passengers', pathMatch: 'full'},
     {path: '**', component: NotFoundComponent}
   ];
 
@@ -20,7 +20,7 @@ const routes: Routes = [
     // angular moduels
     BrowserModule,
     CommonModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, {useHash: false}),
     // custom modules
     PassengerDashboardModule],
   bootstrap: [AppComponent]
